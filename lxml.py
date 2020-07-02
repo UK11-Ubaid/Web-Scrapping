@@ -7,9 +7,14 @@ from lxml import etree
 import os
 import urllib.parse 
 
+
+print("scrapping data from: https://www.loans.co.za/compare-loans...")
+time.sleep(2)
+
 URL = 'https://www.loans.co.za/compare-loans'
 page = requests.get(URL)
 tree = html.fromstring(page.content)
+
 
 catchphrase = tree.xpath('//p[@class = "catchphrase"]/text()')
 amount = tree.xpath('//span[@class = "amountRange"]/text()')
@@ -24,31 +29,54 @@ p = div.getchildren()[4].getchildren()[0].getchildren()[-1]
 links = obj.xpath('/html/body/main/div/div/div[1]/div[2]/article[*]/p[3]/a[1]')
 links = [l.attrib['href'] for l in links]
 
-r = session.get(links[0], verify = False)
-absa = lxml.html.document_fromstring(r.text)
-section = absa.xpath('/html/body/main/div/div/div[1]/section[2]')
 
-print(section[0].getchildren()[1].text)
+#getting error at index 2 because it does not have benefits so its product offered is at index 6 and not 7
+lnk = len(links)
+for l in range(lnk):
+    r = session.get(links[l])
+    absa = lxml.html.document_fromstring(r.text)  
+    section = absa.xpath('/html/body/main/div/div/div[1]/section[2]')
+    sec = section[0].getchildren()[7].getchildren()
+    for value in sec:
+        print(value.text)
 
+
+
+     
+print("Getting suppliers info...")
+time.sleep(1)
+supplier = []
 for i in links:
     url_parts = urllib.parse.urlparse(i)
     path_parts = url_parts[2].rpartition('/')[2]
-    print(path_parts)
-    #print('URL: {}\nreturns: {}\n'.format(i, path_parts[2]))
+    supplier.append(path_parts)
     
-print("scrapping data from: https://www.loans.co.za/compare-loans")
+    
+print("Getting catchphrase...")   
+time.sleep(1)
+print("Getting amount...")
+time.sleep(1)
+print("Getting repayment period...")
+time.sleep(1)
+print("Getting links...")
+time.sleep(1)
+
+print("Creating a table...")
 time.sleep(2)
 
 Supplier = []
 CatchPhrase = []
 Amount = []
 Period = []
-link = []
-for info in zip(catchphrase, amount,repPeriod, links):
-    CatchPhrase.append(info[0])
-    Amount.append(info[1])
-    Period.append(info[2])
-    link.append(info[3])
+Product = []
+Link = []
+for info in zip(supplier,catchphrase, amount,repPeriod, links):
+    Supplier.append(info[0])
+    CatchPhrase.append(info[1])
+    Amount.append(info[2])
+    Period.append(info[3])
+    Link.append(info[4])
     
-df = pd.DataFrame({'Supplier': Supplier, 'Catchphrase': CatchPhrase, 'Amount': Amount, 'RepaymentPeriod': Period, 'Links': link})
+df = pd.DataFrame({'Supplier': Supplier, 'Catchphrase': CatchPhrase, 'Amount': Amount, 'RepaymentPeriod': Period, 'Links': Link})
 df
+
