@@ -25,13 +25,6 @@ div = obj.xpath('/html/body/main/div/div/div[1]')[0]
 p = div.getchildren()[4].getchildren()[0].getchildren()[-1]
 links = obj.xpath('/html/body/main/div/div/div[1]/div[2]/article[*]/p[3]/a[1]')
 links = [l.attrib['href'] for l in links]
-
-r = session.get(links[11])
-absa = lxml.html.document_fromstring(r.text)  
-section = absa.xpath('/html/body/main/div/div/div[1]/section[2]')
-paragraphs = section[0].getchildren()
-sec = paragraphs[-1].getchildren() 
-  
     
 print("Getting suppliers info...")
 time.sleep(1)
@@ -81,7 +74,6 @@ for info in zip(supplier,catchphrase, amount,repPeriod, offer, links):
     Period.append(info[3])
     Product.append(info[4])
     Link.append(info[5])
-     
-    
+        
 df = pd.DataFrame({'Supplier': Supplier, 'Catchphrase': CatchPhrase, 'Amount': Amount, 'RepaymentPeriod': Period, 'Products Offered': offer, 'Links': Link})
 df
