@@ -4,10 +4,7 @@ import requests
 import pandas as pd
 import time
 import lxml.html
-from lxml import etree
-import os
 import urllib.parse 
-
 
 print("scrapping data from: https://www.loans.co.za/compare-loans...")
 time.sleep(2)
@@ -15,7 +12,6 @@ time.sleep(2)
 URL = 'https://www.loans.co.za/compare-loans'
 page = requests.get(URL)
 tree = html.fromstring(page.content)
-
 
 catchphrase = tree.xpath('//p[@class = "catchphrase"]/text()')
 amount = tree.xpath('//span[@class = "amountRange"]/text()')
@@ -66,8 +62,7 @@ for l in range(lnk):
         for value in sec:
             bs.append(value.text)
         offer.append(', '.join(bs))
-
-        
+      
 print("Getting links...")
 time.sleep(1)
 
@@ -90,4 +85,3 @@ for info in zip(supplier,catchphrase, amount,repPeriod, offer, links):
     
 df = pd.DataFrame({'Supplier': Supplier, 'Catchphrase': CatchPhrase, 'Amount': Amount, 'RepaymentPeriod': Period, 'Products Offered': offer, 'Links': Link})
 df
-
